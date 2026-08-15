@@ -17,15 +17,12 @@ jobs:
 
       - name: Install xcbeautify
         run: brew install xcbeautify
-        
-      - name: Kickstart CoreSimulator Platform
-        run: xcodebuild -downloadPlatform iOS
 
       - name: Build and Test Project
         run: |
           set -o pipefail && xcodebuild test \
             -project "AFNavigationDemo.xcodeproj" \
             -scheme "AFNavigationDemo" \
-            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+            -destination 'generic/platform=iOS Simulator'
             | xcbeautify
 
