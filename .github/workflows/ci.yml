@@ -15,20 +15,26 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install xcbeautify
-        run: brew install xcbeautify
-
       - name: Find Available iOS Simulator
         id: select-simulator
         run: |
+          # Finds the first available concrete iPhone simulator name and its ID
           SIM_NAME=$(xcrun simctl list devices available | grep -m 1 "iPhone" | sed -E 's/^[[:space:]]*([^(]+).*/\1/' | xargs)
-          echo "Found simulator: $SIM_NAME"
+          SIM_UDID=$(xcrun simctl list devices available | grep -m 1 "iPhone" | awk -F '[()]' '{print $(NF-1)}')
+          
+          echo "Found simulator: $SIM_NAME ($SIM_UDID)"
           echo "device_name=$SIM_NAME" >> $GITHUB_OUTPUT
+          echo "device_udid=$SIM_UDID" >> $GITHUB_OUTPUT
+
+      - name: Pre-boot iOS Simulator
+        run: |
+          xcrun simctl boot "${{ steps.select-simulator.outputs.device_udid }}"
+          # Give it a brief moment to stabilize
+          sleep 5
 
       - name: Build and Test Project
         run: |
           set -o pipefail && xcodebuild test \
             -project "AFNavigationDemo.xcodeproj" \
             -scheme "AFNavigationDemo" \
-            -destination "platform=iOS Simulator,name=${{ steps.select-simulator.outputs.device_name }}" \
-            | xcbeautify
+            -destination "platform=iOS Simulator,name=${{ steps.select-simulator.outputs.device_name }}"
