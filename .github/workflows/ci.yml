@@ -15,38 +15,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # FIX 1: Clean out any hung simulator states from previous pipeline tasks
-      - name: Reset Simulator Environment
-        run: |
-          xcrun simctl shutdown all || true
-          xcrun simctl erase all || true
-
-      # FIX 2: Bulletproof extraction of both the Name and the exact UDID hex string
-      - name: Find Available iOS Simulator
-        id: select-simulator
-        run: |
-          # Grabs the first available iPhone line (e.g., "iPhone 16 Pro (A1B2C3D4...-...) (Shutdown)")
-          SIM_LINE=$(xcrun simctl list devices available | grep "iPhone" | head -n 1)
-          
-          # Safely parses out the Name and the UDID
-          SIM_NAME=$(echo "$SIM_LINE" | sed -E 's/^[[:space:]]*([^(]+).*/\1/' | xargs)
-          SIM_UDID=$(echo "$SIM_LINE" | grep -oE '[0-9A-FA-z]{8}-[0-9A-FA-z]{4}-[0-9A-FA-z]{4}-[0-9A-FA-z]{4}-[0-9A-FA-z]{12}')
-          
-          echo "Found simulator: $SIM_NAME ($SIM_UDID)"
-          echo "device_name=$SIM_NAME" >> $GITHUB_OUTPUT
-          echo "device_id=$SIM_UDID" >> $GITHUB_OUTPUT
-
-      # FIX 3: Boot using the verified ID hex string, not a status word
-      - name: Pre-boot iOS Simulator
-        run: |
-          xcrun simctl boot "${{ steps.select-simulator.outputs.device_id }}"
-          # Give the VM a moment to load files from disk
-          sleep 10
-
-      # FIX 4: Run tests directly to view compilation output
       - name: Build and Test Project
         run: |
           set -o pipefail && xcodebuild test \
             -project "AFNavigationDemo.xcodeproj" \
             -scheme "AFNavigationDemo" \
-            -destination "platform=iOS Simulator,id=${{ steps.select-simulator.outputs.device_id }}"
+            -destination "platform=iOS Simulator,name=iPhone 17 Pro,OS=latest,arch=arm64" \
