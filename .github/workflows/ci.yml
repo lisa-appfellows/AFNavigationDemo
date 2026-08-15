@@ -17,6 +17,9 @@ jobs:
 
       - name: Install xcbeautify
         run: brew install xcbeautify
+        
+      - name: Kickstart CoreSimulator Platform
+        run: xcodebuild -downloadPlatform iOS
 
       - name: Build and Test Project
         run: |
