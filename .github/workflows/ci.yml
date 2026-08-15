@@ -10,7 +10,7 @@ on:
 jobs:
   test-project:
     runs-on: macos-latest
-
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -18,11 +18,17 @@ jobs:
       - name: Install xcbeautify
         run: brew install xcbeautify
 
+      - name: Find Available iOS Simulator
+        id: select-simulator
+        run: |
+          SIM_NAME=$(xcrun simctl list devices available | grep -m 1 "iPhone" | sed -E 's/^[[:space:]]*([^(]+).*/\1/' | xargs)
+          echo "Found simulator: $SIM_NAME"
+          echo "device_name=$SIM_NAME" >> $GITHUB_OUTPUT
+
       - name: Build and Test Project
         run: |
           set -o pipefail && xcodebuild test \
             -project "AFNavigationDemo.xcodeproj" \
             -scheme "AFNavigationDemo" \
-            -destination 'generic/platform=iOS Simulator'
+            -destination "platform=iOS Simulator,name=${{ steps.select-simulator.outputs.device_name }}" \
             | xcbeautify
-
