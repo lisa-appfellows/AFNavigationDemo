@@ -1,0 +1,35 @@
+name: CD (Manual Release)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-release:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Install xcbeautify
+        run: brew install xcbeautify
+
+      - name: Run Final Tests
+        run: |
+          set -o pipefail && xcodebuild test \
+            -project "AFNavigationDemo.xcodeproj" \
+            -scheme "AFNavigationDemo" \
+            -destination "platform=iOS Simulator,name=iPhone 17 Pro"
+            | xcbeautify
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

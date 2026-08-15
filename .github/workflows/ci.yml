@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+jobs:
+  test-project:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install xcbeautify
+        run: brew install xcbeautify
+
+      - name: Build and Test Project
+        run: |
+          set -o pipefail && xcodebuild test \
+            -project "AFNavigationDemo.xcodeproj" \
+            -scheme "AFNavigationDemo" \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+            | xcbeautify
+

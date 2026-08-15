@@ -1,0 +1,39 @@
+# ==========================================
+# Xcode Project & Workspace Files
+# ==========================================
+userdata/
+*.xcuserdatad
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xclogproducts
+*.xcactivitylog
+
+# ==========================================
+# Build Artifacts
+# ==========================================
+build/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# ==========================================
+# Swift Package Manager (SPM)
+# ==========================================
+.build/
+.swiftpm/
+
+# ==========================================
+# Operating System Files
+# ==========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.Trashes
