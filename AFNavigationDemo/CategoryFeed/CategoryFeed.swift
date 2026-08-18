@@ -53,13 +53,6 @@ struct CategoryFeed: View {
         .navigationTitle(category)
         .toolbarTinted()
     }
-
-    private func didTapTargetedAd() {}
-    private func didDismissTargetedAd() {
-        withAnimation {
-            targetedAdIsVisible = false
-        }
-    }
 }
 
 #Preview {
