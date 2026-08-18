@@ -188,6 +188,21 @@ CoordinatorView                    BasicCoordinator<Page, Cover, Sheet>
                                     └─ BaselineJoyAd            (alerts)
 ```
 
+<table>
+  <tr>
+    <td align="center" valign="top">
+      <img src="docs/news-feed-navigation.gif" width="260" alt="News feed presenting an article cover and pushing a category feed" />
+      <br><strong>News feed → article / category</strong>
+      <br>Cover from a card, push from “See all”
+    </td>
+    <td align="center" valign="top">
+      <img src="docs/article-to-subscription.gif" width="260" alt="Article cover presenting a nested subscription sheet" />
+      <br><strong>Article → subscription</strong>
+      <br>Nested sheet from the in-article ad
+    </td>
+  </tr>
+</table>
+
 Try these flows in the simulator:
 
 1. **Push** — News Feed → “See all … posts”
@@ -209,12 +224,6 @@ AFNavigationDemo/
     ├── TargetedAdCoordinator.swift   ← alert-only coordinator
     └── TargetedAds/                  ← AlertModel producers
 ```
-
-https://github.com/user-attachments/assets/d2cbb5be-9e5c-438b-881a-148333fe42ee
-
-
-https://github.com/user-attachments/assets/4a503c61-3f6c-4096-93f2-01ab37381958
-
 
 For the kit’s own API reference, see [AFNavigationKit Documentation](https://lisa-appfellows.github.io/AFNavigationKit/documentation/afnavigationkit/).
 
