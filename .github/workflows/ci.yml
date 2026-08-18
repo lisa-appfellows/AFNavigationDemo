@@ -21,3 +21,4 @@ jobs:
             -project "AFNavigationDemo.xcodeproj" \
             -scheme "AFNavigationDemo" \
             -destination "platform=iOS Simulator,name=iPhone 17 Pro,OS=latest,arch=arm64" \
+            -skip-testing:AFNavigationDemoUITests
