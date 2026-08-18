@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CategoryFeed: View {
+    @Environment(Coordinator.self) private var coordinator
     @Environment(\.targetedAd) private var targetedAd
     let category: String
 
@@ -15,29 +16,44 @@ struct CategoryFeed: View {
 
     var body: some View {
         ScrollView {
-            if targetedAdIsVisible {
-                TargetedAdBanner(
-                    model: targetedAd,
-                    onAction: didTapTargetedAd,
-                    onDismiss: didDismissTargetedAd
-                )
-            }
+            VStack(spacing: 48) {
+                let hero = Article.mock(category: category, index: 0)
+                MetadataView(
+                    article: hero,
+                    articleType: .feed
+                ) {
+                    coordinator.present(cover: .articlePage(hero))
+                }
 
-            VStack(spacing: 20) {
-                ForEach(0...4, id: \.self) { index in
+                if targetedAdIsVisible {
+                    TargetedAdBanner(
+                        model: targetedAd) {
+                            coordinator.present(
+                                sheet: .targetedAd(urlString: targetedAd.adURL)
+                            )
+                        } onDismiss: {
+                            withAnimation {
+                                targetedAdIsVisible = false
+                            }
+                        }
+                }
+                
+                ForEach(1...4, id: \.self) { index in
+                    let article = Article.mock(category: category, index: index)
                     MetadataView(
-                        article: .mock(category: category, index: index),
-                        articleType: .feed,
-                        action: didTapArticle
-                    )
-                    .padding(.bottom)
+                        article: article,
+                        articleType: .feed
+                    ) {
+                        coordinator.present(cover: .articlePage(article))
+                    }
                 }
             }
             .padding()
         }
+        .navigationTitle(category)
+        .toolbarTinted()
     }
 
-    private func didTapArticle() {}
     private func didTapTargetedAd() {}
     private func didDismissTargetedAd() {
         withAnimation {
@@ -47,6 +63,7 @@ struct CategoryFeed: View {
 }
 
 #Preview {
-    CategoryFeed(category: MockCategory.tech.title)
+    CategoryFeed(category: MockCategory.technology.title)
+        .environment(Coordinator())
         .environment(\.targetedAd, BaselineJoyAd.model)
 }

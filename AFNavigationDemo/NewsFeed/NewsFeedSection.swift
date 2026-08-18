@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct NewsFeedSection: View {
+    @Environment(Coordinator.self) private var coordinator
     let category: String
 
     var body: some View {
@@ -21,11 +22,13 @@ struct NewsFeedSection: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
                     ForEach(0...4, id: \.self) { index in
+                        let article = Article.mock(category: category, index: index)
                         MetadataView(
-                            article: .mock(category: category, index: index),
-                            articleType: .carousel,
-                            action: didTapArticle
-                        )
+                            article: article,
+                            articleType: .carousel
+                        ) {
+                            coordinator.present(cover: .articlePage(article))
+                        }
                         .frame(width: 220)
                     }
                 }
@@ -34,7 +37,9 @@ struct NewsFeedSection: View {
             
             HStack {
                 Spacer()
-                Button(action: didTapSeeAll) {
+                Button {
+                    coordinator.push(page: .categoryFeed(category))
+                } label: {
                     Text("See all \(category) posts →")
                         .font(.caption.bold())
                 }
@@ -45,6 +50,5 @@ struct NewsFeedSection: View {
         .padding(.bottom)
     }
 
-    private func didTapArticle() {}
     private func didTapSeeAll() {}
 }

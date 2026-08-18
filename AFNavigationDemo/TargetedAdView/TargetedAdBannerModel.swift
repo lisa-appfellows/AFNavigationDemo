@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum AdFont {
+enum HeadingFont {
     case custom(String)
     case system
 }
@@ -16,34 +16,37 @@ enum SubheadingStyle { case subheading, caption }
 
 struct TargetedAdBannerModel {
     let systemName: String
-    let tintName: String
-    let adFont: AdFont
     let heading: String
     let subheading: String
-    let subheadingStyle: SubheadingStyle
     let cta: String
-    let legalDisclaimer: LegalDisclaimer?
+    let legalDisclaimer: LegalDisclaimer
     let adURL: String
+    let tintName: String
+    let headingFont: HeadingFont
+    let subheadingStyle: SubheadingStyle
+    let shouldShowDisclaimerOnBanner: Bool
 
     init(
         systemName: String,
-        tintName: String,
-        adFont: AdFont,
         heading: String,
         subheading: String,
-        subheadingStyle: SubheadingStyle,
         cta: String,
-        legalDisclaimer: LegalDisclaimer? = nil,
-        adURL: String
+        legalDisclaimer: LegalDisclaimer,
+        adURL: String,
+        tintName: String,
+        headingFont: HeadingFont,
+        subheadingStyle: SubheadingStyle,
+        shouldShowDisclaimerOnBanner: Bool = false
     ) {
         self.systemName = systemName
-        self.tintName = tintName
-        self.adFont = adFont
         self.heading = heading
         self.subheading = subheading
-        self.subheadingStyle = subheadingStyle
         self.cta = cta
         self.legalDisclaimer = legalDisclaimer
         self.adURL = adURL
+        self.tintName = tintName
+        self.headingFont = headingFont
+        self.subheadingStyle = subheadingStyle
+        self.shouldShowDisclaimerOnBanner = shouldShowDisclaimerOnBanner
     }
 }

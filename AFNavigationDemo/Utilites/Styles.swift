@@ -11,8 +11,19 @@ enum ArticleType { case carousel, feed, page }
 enum FontType { case h1, h2, body, caption }
 
 extension View {
+    func toolbarTinted() -> some View {
+        modifier(ToolbarTintedModifier())
+    }
+
     func articleText(fontType: FontType, articleType: ArticleType) -> some View {
         modifier(ArticleTextModifier(fontType: fontType, articleType: articleType))
+    }
+}
+
+struct ToolbarTintedModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .toolbarBackground(.visible, for: .navigationBar)
     }
 }
 

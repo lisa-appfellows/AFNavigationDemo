@@ -15,7 +15,7 @@ struct TargetedAdBanner: View {
     private var tint: Color { Color(model.tintName) }
     
     private var headingFont: Font {
-        switch model.adFont {
+        switch model.headingFont {
         case .custom(let name):
             return .custom(name, size: 18, relativeTo: .body)
         case .system:
@@ -66,17 +66,19 @@ struct TargetedAdBanner: View {
                 }
                 .padding(.top, 2)
                 
-                if let legalDisclaimer = model.legalDisclaimer {
+                if model.shouldShowDisclaimerOnBanner {
                     Divider()
                         .padding(.vertical, 2)
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(legalDisclaimer.title)
-                            .font(.system(size: disclaimerFontSize - 2, weight: .bold))
-                            .kerning(0.5)
-                            .foregroundStyle(.secondary.opacity(0.8))
+                        if let title = model.legalDisclaimer.title {
+                            Text(title)
+                                .font(.system(size: disclaimerFontSize - 2, weight: .bold))
+                                .kerning(0.5)
+                                .foregroundStyle(.secondary.opacity(0.8))
+                        }
                         
-                        Text(legalDisclaimer.body)
+                        Text(model.legalDisclaimer.banner)
                             .font(.system(size: disclaimerFontSize - 1))
                             .foregroundStyle(.secondary.opacity(0.7))
                     }

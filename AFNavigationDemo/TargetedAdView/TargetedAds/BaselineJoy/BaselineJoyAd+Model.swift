@@ -11,17 +11,19 @@ extension BaselineJoyAd {
     static var model: TargetedAdBannerModel {
         .init(
             systemName: "eye.trianglebadge.exclamationmark",
-            tintName: "BaselineJoy",
-            adFont: .custom("Cochin-BoldItalic"),
             heading: "Unlock Your Baseline Joy.",
             subheading: "Backed by distributed behavioral AI models.",
-            subheadingStyle: .caption,
             cta: "Calibrate Diagnostics",
             legalDisclaimer: .init(
                 title: "LEGAL & ALGORITHMIC COMPLIANCE",
-                body: "These statements have not been evaluated by human behavioral scientists."
+                banner: "These statements have not been evaluated by human behavioral scientists.",
+                body: "These statements have not been evaluated by human behavioral scientists. Tactile anchors do not contain processing units, wireless receivers, or microchips, and are entirely non-functional without manual human enclosure."
             ),
-            adURL: "/baselineJoyAd"
+            adURL: "/baselineJoy",
+            tintName: "BaselineJoy",
+            headingFont: .custom("Cochin-BoldItalic"),
+            subheadingStyle: .caption,
+            shouldShowDisclaimerOnBanner: true
         )
     }
 }

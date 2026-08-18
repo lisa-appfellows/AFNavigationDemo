@@ -7,13 +7,22 @@
 
 import SwiftUI
 
-struct Article {
+struct Article: Hashable {
+    let id = UUID().uuidString
     let imageName: String
     let category: String
     let title: String
     let publishedDate: Date
     let description: String
     let body: [ArticleBody]
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    static func == (lhs: Article, rhs: Article) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 enum ArticleBody: Identifiable {
