@@ -210,6 +210,12 @@ AFNavigationDemo/
     └── TargetedAds/                  ← AlertModel producers
 ```
 
+https://github.com/user-attachments/assets/d2cbb5be-9e5c-438b-881a-148333fe42ee
+
+
+https://github.com/user-attachments/assets/4a503c61-3f6c-4096-93f2-01ab37381958
+
+
 For the kit’s own API reference, see [AFNavigationKit Documentation](https://lisa-appfellows.github.io/AFNavigationKit/documentation/afnavigationkit/).
 
 ## License
