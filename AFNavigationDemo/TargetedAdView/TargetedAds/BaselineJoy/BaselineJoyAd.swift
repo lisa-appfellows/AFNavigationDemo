@@ -8,6 +8,13 @@
 import SwiftUI
 
 struct BaselineJoyAd: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(TargetAdCoord.self) private var targetAdCoord
+
+    @State private var vm = BaselineJoyViewModel()
+    private let model = Self.model
+    private var tint: Color { Color(model.tintName) }
+
     @ScaledMetric(relativeTo: .caption2)
     private var disclaimerFontSize: CGFloat = 8
 
@@ -28,12 +35,12 @@ struct BaselineJoyAd: View {
                         .padding(.top, 12)
                     
                     VStack(spacing: 8) {
-                        Text("Unlock Your Baseline Joy.")
+                        Text(model.heading)
                             .font(.custom("Cochin-BoldItalic", size: 26))
                             .foregroundStyle(.primary)
                             .multilineTextAlignment(.center)
                         
-                        Text("Backed by distributed behavioral AI models.")
+                        Text(model.subheading)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -41,20 +48,25 @@ struct BaselineJoyAd: View {
                     .padding(.horizontal, 24)
                     
                     VStack(spacing: 12) {
-                        IconCard(systemImage: "list.bullet", caption: "Calibrate Emotional Diagnostics") {}
-                        IconCard(systemImage: "flask", caption: "Empirical Case Studies") {}
-                        IconCard(systemImage: "photo", caption: "Photographic Verification Core") {}
-                        IconCard(systemImage: "eye", caption: "Autonomous Agent Methodology") {}
+                        ForEach(BaselineJoyAction.allCases, id: \.self) { action in
+                            IconCard(
+                                systemImage: action.iconName,
+                                caption: action.title,
+                                action: vm.didTapAdAction
+                            )
+                        }
                     }
                     .padding(.horizontal, 16)
                     
                     VStack(spacing: 6) {
-                        Text("LEGAL & ALGORITHMIC COMPLIANCE")
-                            .font(.system(size: disclaimerFontSize - 1, weight: .bold))
-                            .kerning(1)
-                            .foregroundStyle(.secondary.opacity(0.8))
+                        if let title = model.legalDisclaimer.title {
+                            Text(title)
+                                .font(.system(size: disclaimerFontSize - 1, weight: .bold))
+                                .kerning(1)
+                                .foregroundStyle(.secondary.opacity(0.8))
+                        }
                         
-                        Text("These statements have not been evaluated by human behavioral scientists. Tactile anchors do not contain processing units, wireless receivers, or microchips, and are entirely non-functional without manual human enclosure.")
+                        Text(model.legalDisclaimer.body)
                             .font(.system(size: disclaimerFontSize))
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.secondary.opacity(0.7))
@@ -74,6 +86,15 @@ struct BaselineJoyAd: View {
             }
         }
         .background(Color(.systemBackground).ignoresSafeArea())
+        .onChange(of: vm.newAlert) { _, newAlert in
+            if let newAlert = newAlert {
+                targetAdCoord.present(alert: newAlert)
+            }
+        }
+        .toolbar {
+            ToolbarButton.close { dismiss() }
+                .foregroundStyle(tint)
+        }
     }
 }
 
@@ -89,7 +110,7 @@ struct IconCard: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(.white)
                     .frame(width: 34, height: 34)
-                    .background(.tint, in: RoundedRectangle(cornerRadius: 8))
+                    .background(Color.baselineJoy, in: RoundedRectangle(cornerRadius: 8))
                 
                 Text(caption)
                     .font(.system(size: 14, weight: .medium, design: .serif))
@@ -118,4 +139,5 @@ struct IconCard: View {
 
 #Preview {
     BaselineJoyAd()
+        .environment(TargetAdCoord())
 }

@@ -9,13 +9,13 @@
 import Foundation
 
 enum MockCategory: String, CaseIterable {
-    case tech, entertainment, politics
+    case technology, entertainment, politics
 
     var title: String { rawValue.capitalized }
 
     var assets: [String] {
         switch self {
-        case .tech:
+        case .technology:
             return ["tech1", "tech2", "tech3", "tech4", "tech5"]
         case .entertainment:
             return ["entertainment1", "entertainment2", "entertainment3", "entertainment4", "entertainment5"]
@@ -25,7 +25,7 @@ enum MockCategory: String, CaseIterable {
     }
     
     init(value: String) {
-        self = MockCategory(rawValue: value.lowercased()) ?? .tech
+        self = MockCategory(rawValue: value.lowercased()) ?? .technology
     }
 }
 #endif

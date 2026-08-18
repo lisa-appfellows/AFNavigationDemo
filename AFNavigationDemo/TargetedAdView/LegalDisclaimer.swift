@@ -8,6 +8,13 @@
 import Foundation
 
 struct LegalDisclaimer {
-    let title: String
+    let title: String?
+    let banner: String
     let body: String
+
+    init(title: String? = nil, banner: String, body: String) {
+        self.title = title
+        self.banner = banner
+        self.body = body
+    }
 }

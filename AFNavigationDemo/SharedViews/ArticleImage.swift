@@ -55,5 +55,5 @@ struct ArticleImage: View {
 }
 
 #Preview {
-    ArticleImage(assetName: MockCategory.tech.assets[0], articleType: .carousel)
+    ArticleImage(assetName: MockCategory.technology.assets[0], articleType: .carousel)
 }

@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "afnavigationkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lisa-appfellows/AFNavigationKit.git",
+      "state" : {
+        "revision" : "fdac13a0f85fe85d6fbff65cacf865f01292fbdd",
+        "version" : "2.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}

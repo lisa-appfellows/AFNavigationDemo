@@ -5,116 +5,174 @@
 //  Created by Lisa Fellows on 2026-08-17.
 //
 
+import AFNavigationKit
 import SwiftUI
 
 struct SubscriptionSignUpView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var selectedPlan: String = "Monthly"
-    
-    let plans = [
-        (name: "Monthly", price: "$4.99 / mo", description: "Flexible access, cancel anytime."),
-        (name: "Annual", price: "$39.99 / yr", description: "Best value. Save 33% overall."),
-        (name: "Premium", price: "$9.99 / mo", description: "Includes print edition & stock tools.")
-    ]
+    @Environment(TargetAdCoord.self) private var targetAdCoord
+
+    @State private var vm = SubscriptionSignUpViewModel()
+    private let model = Self.model
+    private var tint: Color { Color(model.tintName) }
     
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                VStack(spacing: 8) {
-                    Image(systemName: "newspaper.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 60, height: 60)
-                        .foregroundColor(.blue)
-                        .padding(.top)
-                    
-                    Text("Unlock Full Access")
-                        .font(.largeTitle)
-                        .bold()
-                    
-                    Text("Join over 100,000 readers getting premium daily insights.")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                }
-                
-                VStack(alignment: .leading, spacing: 12) {
-                    Label("Unlimited articles across all categories", systemImage: "checkmark.circle.fill")
-                    Label("Zero commercial advertisements", systemImage: "checkmark.circle.fill")
-                    Label("Exclusive weekly deep-dive reports", systemImage: "checkmark.circle.fill")
-                    Label("Offline reading mode enabled", systemImage: "checkmark.circle.fill")
-                }
-                .font(.subheadline)
-                .foregroundColor(.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(12)
+                SubscriptionHeader()
+                SubscriptionBenefitsCard()
                 
                 VStack(spacing: 12) {
-                    ForEach(plans, id: \.name) { plan in
-                        Button(action: { selectedPlan = plan.name }) {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(plan.name)
-                                        .font(.headline)
-                                        .foregroundColor(.primary)
-                                    Text(plan.description)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                
-                                Spacer()
-                                
-                                Text(plan.price)
-                                    .font(.subheadline)
-                                    .bold()
-                                    .foregroundColor(.blue)
-                                
-                                Image(systemName: selectedPlan == plan.name ? "largecircle.fill.circle" : "circle")
-                                    .foregroundColor(selectedPlan == plan.name ? .blue : .gray)
-                            }
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(selectedPlan == plan.name ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
-                            )
-                        }
-                        .buttonStyle(.plain)
+                    ForEach(vm.plans, id: \.name) { plan in
+                        SubscriptionPlanView(selectedPlan: $vm.selectedPlan, plan: plan)
                     }
                 }
                 
                 VStack(spacing: 12) {
-                    Button(action: {
-                    }) {
-                        Text("Subscribe Now")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .cornerRadius(12)
-                    }
-                    
-                    Button("Restore Past Purchases") {
-                    }
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+                    SubscribeNowButton(action: vm.didSubscribe)
+                    RestoreSubscriptionButton(action: vm.didRestore)
                 }
                 .padding(.top, 8)
-                
-                Text("Subscriptions automatically renew unless canceled at least 24 hours before the end of the current billing cycle.")
+
+                Text(model.legalDisclaimer.body)
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
             .padding()
+        }
+        .onChange(of: vm.newAlert) { _, newAlert in
+            if let newAlert = newAlert {
+                targetAdCoord.present(alert: newAlert)
+            }
+        }
+        .onChange(of: vm.dismiss) { dismiss() }
+        .toolbar {
+            ToolbarButton.close(action: vm.didTapDismiss)
+                .foregroundStyle(.tint)
+        }
+        .tint(tint)
+    }
+}
+
+struct SubscriptionHeader: View {
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: "newspaper.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 60, height: 60)
+                .foregroundStyle(.tint)
+                .padding(.top)
+            
+            Text("Unlock Full Access")
+                .font(.largeTitle)
+                .bold()
+            
+            Text("Join over 100,000 readers getting premium daily insights.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+        }
+    }
+}
+
+struct SubscriptionBenefitsCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Unlimited articles across all categories", systemImage: "checkmark.circle.fill")
+            Label("Zero commercial advertisements", systemImage: "checkmark.circle.fill")
+            Label("Exclusive weekly deep-dive reports", systemImage: "checkmark.circle.fill")
+            Label("Offline reading mode enabled", systemImage: "checkmark.circle.fill")
+        }
+        .font(.subheadline)
+        .foregroundStyle(.primary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
+    }
+}
+
+struct SubscriptionPlanView: View {
+    @Binding var selectedPlan: SubscriptionPlan
+    let plan: SubscriptionPlan
+
+    private var isSelected: Bool { selectedPlan == plan }
+    private var circleName: String {
+        isSelected ? "largecircle.fill.circle" : "circle"
+    }
+    private var tintStyle: AnyShapeStyle {
+        isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(.gray)
+    }
+
+    var body: some View {
+        Button(action: didSelect) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(plan.name)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text(plan.description)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                
+                Spacer()
+                
+                Text(plan.priceInfo)
+                    .font(.subheadline)
+                    .bold()
+                    .foregroundStyle(.tint)
+                
+                Image(systemName: circleName)
+                    .foregroundStyle(tintStyle)
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(selectedPlan == plan ? Color.subscription : Color.gray.opacity(0.3), lineWidth: 2)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func didSelect() {
+        selectedPlan = plan
+    }
+}
+
+struct SubscribeNowButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("Subscribe Now")
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.subscription)
+                .cornerRadius(12)
+        }
+    }
+}
+
+struct RestoreSubscriptionButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("Restore Past Purchases")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
         }
     }
 }
 
 #Preview {
     SubscriptionSignUpView()
+        .environment(TargetAdCoord())
 }
